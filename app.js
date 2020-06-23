@@ -461,9 +461,9 @@ app.get("/", function(req, res) {
   const promise1 = getCategoryData()
   const promise2 = getCategoryData2()
   const promise3 = getCategoryData3()
-  const promise4 = getCategoryData3()
-  const promise5 = getCategoryData3()
-  const promise6 = getCategoryData3()
+  const promise4 = getCategoryData4()
+  const promise5 = getCategoryData5()
+  const promise6 = getCategoryData6()
 
   Promise.all([promise1, promise2, promise3, promise4, promise5, promise6]).then((values) => {
     res.send("Hello World");
