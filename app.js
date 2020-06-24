@@ -1,10 +1,10 @@
-const PORT = process.env.PORT || 3000;
-const express = require("express");
-const app = express();
+var PORT = process.env.PORT || 3000;
+var express = require("express");
+var app = express();
 app.use(express.json());
 
-const axios = require('axios')
-const dbUrl = 'http://178.62.80.219/v1/graphql';
+var axios = require('axios')
+var dbUrl = 'http://178.62.80.219/v1/graphql';
 
 let pageNumber = 1;
 let pageNumber2 = 1;
@@ -12,83 +12,6 @@ let pageNumber3 = 1;
 let pageNumber4 = 1;
 let pageNumber5 = 1;
 let pageNumber6 = 1;
-
-// get the result, check if the item price has change in the db, if yes update it
-function setProductUrl({ productId, url }) {
-  const query = `mutation {
-  update_etsyProducts(where: {id: {_eq: ${productId} }}, _set: {url: "${url}" }) {
-    affected_rows
-  }
-}`
-
-  return axios({
-    method: 'post',
-    url: dbUrl,
-    data: { query }
-  }).catch(e => console.log('error insertProductPriceChange', e))
-}
-function getData() {
-  console.log('getData number', pageNumber2)
-  const etsyUrl = `https://openapi.etsy.com/v2/listings/active?limit=100&api_key=vnh1jmnads2rcoxpidw5wuvw&page=${pageNumber2}`;
-  return axios({
-    method: 'get',
-    url: etsyUrl,
-  }).then(res => {
-    res.data.results.map((item, i) => {
-      const { listing_id, price, creation_tsz, ending_tsz, original_creation_tsz, last_modified_tsz, currency_code } = item;
-      const query = `
-    mutation {
-      insert_etsyProducts(objects: { created: ${original_creation_tsz}, price: "${price}", id: ${listing_id}, currency_code: "${currency_code}" }) {
-        affected_rows
-      }
-    }`
-      axios({
-        method: 'post',
-        url: dbUrl,
-        data: { query }
-      }).then((data) => {
-
-      })
-        .catch(e => console.log('error!!', e))
-
-      if (res.data.results.length - 1 === i) {
-        pageNumber2++
-        getData()
-      }
-    })
-  })
-}
-function getShopData() {
-  console.log('getShopData number', pageNumber)
-  const etsyUrl = `https://openapi.etsy.com/v2/shops?limit=100&api_key=vnh1jmnads2rcoxpidw5wuvw&page=${pageNumber}`;
-  return axios({
-    method: 'get',
-    url: etsyUrl,
-  }).then(res => {
-    res.data.results.map((item, i) => {
-      const { user_id, shop_id, shop_name } = item;
-      const query = `
-    mutation {
-  insert_shops(objects: {id: ${shop_id}, shop_name: "${shop_name}", user_id: ${user_id} }) {
-    affected_rows
-  }
-}`
-      axios({
-        method: 'post',
-        url: dbUrl,
-        data: { query }
-      }).then((data) => {
-
-      })
-        .catch(e => console.log('error!!', e))
-
-      if (res.data.results.length - 1 === i) {
-        pageNumber++
-        getShopData()
-      }
-    })
-  })
-}
 
 function checkIfProductExist(id) {
   const query = `
@@ -167,10 +90,10 @@ function getCategoryData() {
       }`
 
       // before insert, check if the item price has changed, if yes, add
-      const product = await checkIfProductExist(listing_id)
+      var product = await checkIfProductExist(listing_id)
 
       if (product) {
-        const { price, currencyCode } = product
+        var { price, currencyCode } = product
         if (price !== item.price) {
           console.log('price change!!', item.price, listing_id)
           await insertProductPriceChange({
@@ -209,16 +132,16 @@ function getCategoryData2() {
     url: etsyUrl,
   }).then(res => {
     res.data.results.map(async (item, i) => {
-      const { listing_id, price, original_creation_tsz, currency_code, url } = item;
+      var { listing_id, price, original_creation_tsz, currency_code, url } = item;
 
-      const query = `mutation {
+      var query = `mutation {
         insert_etsyProducts(objects: { currencyCode: "${currency_code}" categoryId: 2, id: ${listing_id}, price: "${price}", creationDate: ${original_creation_tsz} }) {
           affected_rows
         }
       }`
 
       // before insert, check if the item price has changed, if yes, add
-      const product = await checkIfProductExist(listing_id)
+      var product = await checkIfProductExist(listing_id)
 
       if (product) {
         const { price, currencyCode } = product
@@ -254,25 +177,25 @@ function getCategoryData2() {
 }
 function getCategoryData3() {
   console.log('getCategoryData3 number', pageNumber3)
-  const etsyUrl = `https://openapi.etsy.com/v2/listings/active?limit=100&page=${pageNumber3}&taxonomy_id=902&api_key=vnh1jmnads2rcoxpidw5wuvw`;
+  var etsyUrl = `https://openapi.etsy.com/v2/listings/active?limit=100&page=${pageNumber3}&taxonomy_id=902&api_key=vnh1jmnads2rcoxpidw5wuvw`;
   return axios({
     method: 'get',
     url: etsyUrl,
   }).then(res => {
     res.data.results.map(async (item, i) => {
-      const { listing_id, price, original_creation_tsz, currency_code, url } = item;
+      var { listing_id, price, original_creation_tsz, currency_code, url } = item;
 
-      const query = `mutation {
+      var query = `mutation {
         insert_etsyProducts(objects: { currencyCode: "${currency_code}" categoryId: 3, id: ${listing_id}, price: "${price}", creationDate: ${original_creation_tsz} }) {
           affected_rows
         }
       }`
 
       // before insert, check if the item price has changed, if yes, add
-      const product = await checkIfProductExist(listing_id)
+      var product = await checkIfProductExist(listing_id)
 
       if (product) {
-        const { price, currencyCode } = product
+        var { price, currencyCode } = product
         if (price !== item.price) {
           console.log('price change!!', item.price, listing_id)
           await insertProductPriceChange({
@@ -305,25 +228,25 @@ function getCategoryData3() {
 }
 function getCategoryData4() {
   console.log('getCategoryData4 number', pageNumber4)
-  const etsyUrl = `https://openapi.etsy.com/v2/listings/active?limit=100&page=${pageNumber4}&taxonomy_id=903&api_key=vnh1jmnads2rcoxpidw5wuvw`;
+  var etsyUrl = `https://openapi.etsy.com/v2/listings/active?limit=100&page=${pageNumber4}&taxonomy_id=903&api_key=vnh1jmnads2rcoxpidw5wuvw`;
   return axios({
     method: 'get',
     url: etsyUrl,
   }).then(res => {
     res.data.results.map(async (item, i) => {
-      const { listing_id, price, original_creation_tsz, currency_code, url } = item;
+      var { listing_id, price, original_creation_tsz, currency_code, url } = item;
 
-      const query = `mutation {
+      var query = `mutation {
         insert_etsyProducts(objects: { currencyCode: "${currency_code}" categoryId: 4, id: ${listing_id}, price: "${price}", creationDate: ${original_creation_tsz} }) {
           affected_rows
         }
       }`
 
       // before insert, check if the item price has changed, if yes, add
-      const product = await checkIfProductExist(listing_id)
+      var product = await checkIfProductExist(listing_id)
 
       if (product) {
-        const { price, currencyCode } = product
+        var { price, currencyCode } = product
         if (price !== item.price) {
           console.log('price change!!', item.price, listing_id)
           await insertProductPriceChange({
@@ -356,25 +279,25 @@ function getCategoryData4() {
 }
 function getCategoryData5() {
   console.log('getCategoryData5 number', pageNumber5)
-  const etsyUrl = `https://openapi.etsy.com/v2/listings/active?limit=100&page=${pageNumber5}&taxonomy_id=905&api_key=vnh1jmnads2rcoxpidw5wuvw`;
+  var etsyUrl = `https://openapi.etsy.com/v2/listings/active?limit=100&page=${pageNumber5}&taxonomy_id=905&api_key=vnh1jmnads2rcoxpidw5wuvw`;
   return axios({
     method: 'get',
     url: etsyUrl,
   }).then(res => {
     res.data.results.map(async (item, i) => {
-      const { listing_id, price, original_creation_tsz, currency_code, url } = item;
+      var { listing_id, price, original_creation_tsz, currency_code, url } = item;
 
-      const query = `mutation {
+      var query = `mutation {
         insert_etsyProducts(objects: { currencyCode: "${currency_code}" categoryId: 5, id: ${listing_id}, price: "${price}", creationDate: ${original_creation_tsz} }) {
           affected_rows
         }
       }`
 
       // before insert, check if the item price has changed, if yes, add
-      const product = await checkIfProductExist(listing_id)
+      var product = await checkIfProductExist(listing_id)
 
       if (product) {
-        const { price, currencyCode } = product
+        var { price, currencyCode } = product
         if (price !== item.price) {
           console.log('price change!!', item.price, listing_id)
           await insertProductPriceChange({
